@@ -1693,11 +1693,11 @@
     </div>
 
     <!-- ===========================
-         AUDIO (Ganti src dengan file musik Anda)
+         AUDIO - File musik: musicprewed.mp3
+         Pastikan file ini berada di folder yang sama dengan index.html
          =========================== -->
     <audio id="bg-music" loop preload="auto">
-        <!-- Ganti URL di bawah ini dengan file musik prewedding Anda -->
-        <source src="music.mp3" type="audio/mpeg">
+        <source src="musicprewed.mp3" type="audio/mpeg">
     </audio>
 
     <!-- ===========================
@@ -2135,7 +2135,7 @@
 
                     <!-- QRIS -->
                     <div class="envelope-qr">
-                        <!-- Ganti gambar QR Code di bawah dengan QR Code pembayaran Anda -->
+                        <!-- Ganti gambar QR Code di bawah ini dengan QR Code pembayaran Anda -->
                         <img src="https://picsum.photos/seed/qris-placeholder/200/200" alt="QRIS Payment">
                         <p class="envelope-qr-label">Scan QRIS untuk Pembayaran</p>
                     </div>
@@ -2259,7 +2259,6 @@
             cover.classList.add('hidden');
             setTimeout(function() {
                 mainContent.style.display = 'block';
-                /* Trigger reflow untuk animasi opacity */
                 void mainContent.offsetWidth;
                 mainContent.classList.add('visible');
                 musicToggle.style.display = 'flex';
@@ -2278,7 +2277,6 @@
                 bgMusic.play().then(function() {
                     musicToggle.classList.add('playing');
                 }).catch(function() {
-                    /* Browser memblokir autoplay, coba sekali lagi saat interaksi */
                     showToast('<i class="fas fa-info-circle"></i> Klik sekali lagi untuk memutar musik');
                 });
             }
@@ -2357,7 +2355,6 @@
         /* ===========================
            GALLERY LIGHTBOX
            =========================== */
-        /* Kumpulkan semua URL gambar galeri */
         document.querySelectorAll('.gallery-item img').forEach(function(img) {
             galleryImages.push(img.src);
         });
@@ -2409,7 +2406,6 @@
             if (e.target === lightbox) closeLightbox();
         });
 
-        /* Keyboard navigation untuk lightbox */
         document.addEventListener('keydown', function(e) {
             if (!lightbox.classList.contains('active')) return;
             if (e.key === 'Escape') closeLightbox();
@@ -2431,12 +2427,12 @@
         }
 
         /* ===========================
-           RSVP FORM
+           RSVP FORM & WISHES
            =========================== */
         /*
-           CATATAN UNTUK INTEGRASI BACKEND:
-           Data RSVP saat ini disimpan di localStorage browser.
-           Untuk produksi, ganti bagian penyimpanan dengan AJAX ke PHP/MySQL:
+           CATATAN INTEGRASI BACKEND:
+           Data saat ini disimpan di localStorage browser.
+           Untuk produksi, ganti penyimpanan dengan AJAX ke PHP/MySQL:
 
            fetch('save_rsvp.php', {
                method: 'POST',
@@ -2445,7 +2441,6 @@
            });
         */
 
-        /* Data ucapan awal (contoh) */
         const defaultWishes = [
             {
                 name: 'Keluarga Besar Habib',
@@ -2473,7 +2468,6 @@
             }
         ];
 
-        /* Inisialisasi data dari localStorage atau gunakan data default */
         function getWishes() {
             const stored = localStorage.getItem('wedding_wishes');
             if (stored) {
@@ -2489,7 +2483,12 @@
             localStorage.setItem('wedding_wishes', JSON.stringify(wishes));
         }
 
-        /* Render ucapan */
+        function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
+
         function renderWishes() {
             const wishes = getWishes();
             if (wishes.length === 0) {
@@ -2507,17 +2506,8 @@
             }).join('');
         }
 
-        /* Escape HTML untuk mencegah XSS */
-        function escapeHtml(str) {
-            var div = document.createElement('div');
-            div.appendChild(document.createTextNode(str));
-            return div.innerHTML;
-        }
-
-        /* Render saat halaman dimuat */
         renderWishes();
 
-        /* Handle form submit */
         rsvpForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -2526,18 +2516,15 @@
             var status = document.getElementById('rsvp-status').value;
             var message = document.getElementById('rsvp-message').value.trim();
 
-            /* Validasi sederhana */
             if (!name || !guests || !status || !message) {
                 showToast('<i class="fas fa-exclamation-circle"></i> Mohon lengkapi semua field');
                 return;
             }
 
-            /* Disable tombol sementara */
             var btnRsvp = document.getElementById('btn-rsvp');
             btnRsvp.disabled = true;
             btnRsvp.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:8px;"></i> Mengirim...';
 
-            /* Simulasi pengiriman (ganti dengan AJAX ke PHP untuk produksi) */
             setTimeout(function() {
                 var now = new Date();
                 var timeStr = now.getDate() + ' ' +
@@ -2556,14 +2543,12 @@
                 saveWish(wish);
                 renderWishes();
 
-                /* Reset form */
                 rsvpForm.reset();
                 btnRsvp.disabled = false;
                 btnRsvp.innerHTML = '<i class="fas fa-paper-plane" style="margin-right:8px;"></i> Kirim Konfirmasi';
 
                 showToast('<i class="fas fa-check-circle"></i> Terima kasih! Ucapan Anda telah terkirim.');
 
-                /* Scroll ke bagian ucapan */
                 setTimeout(function() {
                     document.getElementById('wishes').scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 800);
@@ -2583,7 +2568,6 @@
                     btn.innerHTML = '<i class="far fa-copy"></i> Salin';
                 }, 2000);
             }).catch(function() {
-                /* Fallback untuk browser lama */
                 var textarea = document.createElement('textarea');
                 textarea.value = text;
                 textarea.style.position = 'fixed';
